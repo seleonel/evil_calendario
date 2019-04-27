@@ -3,16 +3,22 @@
 
 typedef struct {
 	bool ha_feriado;
-	char nome_fer[11][30];
+	unsigned int dia_ferfix[3];
+	unsigned int mes_ferfix[3];
+	char nome_ferfix[3][100];
 } feriados;
 
 typedef struct {
-	short int qtd;
 	feriados fer;
+	unsigned int fev_bis;
+	unsigned int fev_nobis;
+	unsigned int dias_30;
+	unsigned int dias_31;
 } dias;
 
 typedef struct {
 	short int qtd;
+	short int dias[14][6][7];
 	char nome_semana[8][30];
 	char nome_mes[13][30];
 	dias dia;
