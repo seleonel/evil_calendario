@@ -2,6 +2,7 @@
 #define FUNCOES_H
 #include "estrutura.h"
 #include <string.h>
+#include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -9,13 +10,21 @@
 #define CARCT 30
 #define MES 12
 #define SEM 7
+void zerarMatrizes(anos* ano)
+{
+	for(int i = 0; i < 14; i ++)
+		for(int j = 0; j < 6; j++)
+			for(int k = 0; k < 7; k++)
+				ano->mes.dias[i][j][k] = 0;
+
+}	
 void feriadosFixos(anos* ano)
 {
 	char delimit[] 		= "\t"; // no caso, tab é o separador do arquivo
 	FILE * fer_fixos 	= fopen("fixos", "r");
 	char linha[100];
 	char * ponteiro		= NULL;	
-	for(int i = 0; 
+	for(int i = 1; 
 	    fgets(linha,100, fer_fixos); 
 	    i++)
 	{
@@ -83,9 +92,87 @@ void mostraMeses()
 
 
 }
+unsigned short int congruenzaZell(anos* ano, int mes)
+{
+	unsigned short int primeiro_dia = 1;
+	long int ano_copia = ano->ano;
+	long int k, j, h;
+	k = j = k = 0;
+
+	// retirado de https://www.geeksforgeeks.org/zellers-congruence-find-day-date/
+
+	if (mes == 1)
+	{
+		mes 	= 13;
+		--ano_copia;
+	}else if(mes == 2)
+	{
+		mes = 14;
+		--ano_copia;
+	}
+	k 	= ano_copia % 100;
+	j 	= ano_copia / 100;
+	h 	= primeiro_dia + 13*(mes+1)/5 + k + k/4 + j/4 + 5*j; 
+	h 	= h % 7; 
+	if(h == 0)
+		h 	= 7;
+	return h;
+
+}
+void preencherDias(anos* ano, int mes, unsigned int prim_dia)
+{
+	unsigned short int cont = 1;
+	for(int j = 1; j <= 6; j ++){
+		for(int k = 1; k <= 7 ; k++){
+			if (j == 1 && k < prim_dia){
+				continue;
+			}else{
+				ano->mes.dias[mes][j][k] = cont;
+			}
+		
+			cont += 1;
+			if (cont > ano->mes.dia.qtd){
+				ano->mes.ultimo_dia = k;
+				ano->mes.ultima_sem = j;
+				return ;
+			}
+			
+		}
+	}
+	
+		
+
+}
+void definirDias(anos* ano, int mes, unsigned int prim_dia)
+{
+	if (mes == 2){
+		if(ano->bissexto)
+			ano->mes.dia.qtd = 29;
+		else
+			ano->mes.dia.qtd = 28;
+	}else if(mes == 1 || mes == 3 
+	    || mes == 5 || mes == 7 
+	    || mes == 8 || mes == 10
+	    || mes == 12){
+		ano->mes.dia.qtd = 31;
+	}else{
+		ano->mes.dia.qtd = 30;
+	}
+	preencherDias(ano, mes, prim_dia);
+	
+}
+
 void definirDatas(anos* ano)
 {
-
+	unsigned int prim_dia 	= 0;
+	ano->mes.ultimo_dia 	= 0;
+	//definição de cada dia em específico 
+	//congruencia de zeller
+	for(int i = 1 ; i <= MES ; i++)
+	{
+		prim_dia = congruenzaZell(ano, i);
+		definirDias(ano, i, prim_dia);
+	}
 
 }
 void definirFeriados(anos* ano)
@@ -99,9 +186,5 @@ void imprimirFeriados(anos* ano)
 
 
 }
-void preencherDias()
-{
 
-
-}
 #endif
