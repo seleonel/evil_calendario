@@ -20,13 +20,7 @@ int main()
 	ano.ano = year;
 	definirNomes(&ano);
 	definirDatas(&ano);
-	for(int i = 1; i <= 12; i++){
-		printf("Mes %d\n", i);
-		for(int j = 1; j <= 6; j++){
-			for(int k = 1; k <= 7; k++){
-				printf(" %d ", ano.mes.dias[i][j][k]);}
-			puts("\n");}}
-	//definirFeriados(&ano);
+	definirFeriados(&ano);
 	//imprimirFeriados(&ano);
 
 	return 0;

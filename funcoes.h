@@ -34,10 +34,10 @@ void feriadosFixos(anos* ano)
 			switch(k)
 			{
 				case 0: 
-					ano->mes.dia.fer.dia_ferfix[i] =  strtol(ponteiro, NULL, 10);
+					ano->mes.dia.fer.dia_ferfix[i][0] =  strtol(ponteiro, NULL, 10);
 					break;
 				case 1: 
-					ano->mes.dia.fer.mes_ferfix[i] = strtol(ponteiro, NULL, 10);
+					ano->mes.dia.fer.dia_ferfix[i][1] = strtol(ponteiro, NULL, 10);
 					break;
 				case 2: 
 					strcpy(ano->mes.dia.fer.nome_ferfix[i], ponteiro);
@@ -132,8 +132,7 @@ void preencherDias(anos* ano, int mes, unsigned int prim_dia)
 		
 			cont += 1;
 			if (cont > ano->mes.dia.qtd){
-				ano->mes.ultimo_dia = k;
-				ano->mes.ultima_sem = j;
+				ano->mes.ultimo_dia[mes] = cont - 1;
 				return ;
 			}
 			
@@ -165,7 +164,6 @@ void definirDias(anos* ano, int mes, unsigned int prim_dia)
 void definirDatas(anos* ano)
 {
 	unsigned int prim_dia 	= 0;
-	ano->mes.ultimo_dia 	= 0;
 	//definição de cada dia em específico 
 	//congruencia de zeller
 	for(int i = 1 ; i <= MES ; i++)
@@ -175,9 +173,66 @@ void definirDatas(anos* ano)
 	}
 
 }
+void salvarRelacionados(int msanta,int dia_santa, int mquarta, int dia_quarta, int pascoa, int mpasc, anos* ano )
+{}
+void definirRelacionados(int dia_pasc, int mes_pasc, anos* ano)
+{
+	short int dias_cinza	 = 46;
+	short int dias_sexta 	 = 2;
+	int quartafeira_c	 = 0;
+	int sexta_santa	         = 0;
+	int mes_quarta		 = mes_pasc;
+	int mes_santa		 = mes_pasc;
+	
+	quartafeira_c = dia_pasc - dias_cinza;
+	sexta_santa = dia_pasc - dias_sexta;
+
+	while( quartafeira_c < 1 )
+	{
+		--mes_quarta;
+		quartafeira_c = ano->mes.ultimo_dia[mes_quarta] +  quartafeira_c;
+	}
+	while( sexta_santa < 1 )
+	{
+		--mes_santa;
+		sexta_santa = ano->mes.ultimo_dia[mes_santa] + sexta_santa;
+	}
+	salvarRelacionados(mes_santa, sexta_santa, mes_quarta, quartafeira_c, dia_pasc, mes_pasc, ano );
+
+}
+void definirPascoa(anos* ano)
+{
+	// primeira tentativa, usar o metodo anonimo
+	// tambem chamado de meeus/jones/butcher
+	int a, b, c, d, e, f, g, 
+	    h, i, k, l, m, n, p;
+	a = b = c = d = e = f = g = 
+	h = i = k = l = m = n = p = 0;
+
+	a = ano->ano % 19;
+	b = ano->ano / 100;
+	c = ano->ano % 100;
+	d = b / 4;
+	e = b % 4;
+	f = ( b + 8 ) / 25;
+	g = ( b - f + 1) / 3;
+	h = ( 19 * a + b - d - g + 15) % 30;
+	i = c / 4;
+	k = c % 4;
+	l = ( 32 + 2 * e + 2 * i - h - k) % 7;
+	m = ( a + 11 * h + 22 * l ) / 451;
+	n = ( h + l - 7 * m + 114 ) / 31; // mes
+	p = (( h + l - 7 * m + 114 ) % 31 ) + 1; // dia
+	ano->mes.dia.fer.ha_feriado[n] = true;
+	definirRelacionados(p, n, ano);
+}
+
 void definirFeriados(anos* ano)
 {
+	/* definir aqui os booleanos 
+	 * dos fixos (TODO)*/
 
+	definirPascoa(ano);
 
 }
 void imprimirFeriados(anos* ano)
