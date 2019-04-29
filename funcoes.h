@@ -174,7 +174,20 @@ void definirDatas(anos* ano)
 
 }
 void salvarRelacionados(int msanta,int dia_santa, int mquarta, int dia_quarta, int pascoa, int mpasc, anos* ano )
-{}
+{
+	FILE * arq_dim = fopen("dinamicos", "w");
+ 
+	if(!arq_dim) 
+		exit(EXIT_FAILURE);
+	
+	fprintf(arq_dim, "%d\t\%d\tQuarta-feira Santa\n", dia_quarta, mquarta);
+
+	fprintf(arq_dim, "%d\t\%d\tPaixão de Cristo\n", dia_santa, msanta);
+
+	fprintf(arq_dim, "%d\t\%d\tDomingo de páscoa\n", pascoa, mpasc);
+	fclose(arq_dim);
+
+}
 void definirRelacionados(int dia_pasc, int mes_pasc, anos* ano)
 {
 	short int dias_cinza	 = 46;
@@ -233,6 +246,10 @@ void definirFeriados(anos* ano)
 	 * dos fixos (TODO)*/
 
 	definirPascoa(ano);
+	//definirEquinocios();
+	//definirEstacoes();
+	//definirLuas();
+	//finalizarBooleanos();
 
 }
 void imprimirFeriados(anos* ano)
