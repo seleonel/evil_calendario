@@ -17,6 +17,7 @@ typedef struct {
 typedef struct {
 	short int qtd;
 	short int dias[14][6][7];
+	short int qtd_dias[14];
 	short int ultimo_dia[14];
 	char nome_semana[8][30];
 	char nome_mes[13][30];

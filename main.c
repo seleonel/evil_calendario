@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
+#include "lua.h"
 #include "funcoes.h"
 #include "estrutura.h"
 // passagem de parametros pro main por argc e argv
@@ -14,7 +15,7 @@ int main()
 	anos ano;
 	zerarMatrizes(&ano);
 	// leitura do ano por fgets ou scanf
-	short int year = 2019;
+	short int year = 2020;
 	// primeira checagem se bissexto ou não
 	ano.bissexto = ehBissexto(year);
 	ano.ano = year;

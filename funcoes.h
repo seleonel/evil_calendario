@@ -1,6 +1,7 @@
 #ifndef FUNCOES_H 
 #define FUNCOES_H
 #include "estrutura.h"
+#include "lua.h"
 #include <string.h>
 #include <math.h>
 #include <stdlib.h>
@@ -10,6 +11,7 @@
 #define CARCT 30
 #define MES 12
 #define SEM 7
+void calculoLunar(anos*, int, int, double*);
 void zerarMatrizes(anos* ano)
 {
 	for(int i = 0; i < 14; i ++)
@@ -145,17 +147,21 @@ void preencherDias(anos* ano, int mes, unsigned int prim_dia)
 void definirDias(anos* ano, int mes, unsigned int prim_dia)
 {
 	if (mes == 2){
-		if(ano->bissexto)
+		if(ano->bissexto){
 			ano->mes.dia.qtd = 29;
-		else
+			ano->mes.qtd_dias[mes] = ano->mes.dia.qtd;
+		}else{
 			ano->mes.dia.qtd = 28;
-	}else if(mes == 1 || mes == 3 
+			ano->mes.qtd_dias[mes] = ano->mes.dia.qtd;
+		}}else if(mes == 1 || mes == 3 
 	    || mes == 5 || mes == 7 
 	    || mes == 8 || mes == 10
 	    || mes == 12){
 		ano->mes.dia.qtd = 31;
+		ano->mes.qtd_dias[mes] = ano->mes.dia.qtd;
 	}else{
 		ano->mes.dia.qtd = 30;
+		ano->mes.qtd_dias[mes] = ano->mes.dia.qtd;
 	}
 	preencherDias(ano, mes, prim_dia);
 	
@@ -244,11 +250,18 @@ void definirFeriados(anos* ano)
 {
 	/* definir aqui os booleanos 
 	 * dos fixos (TODO)*/
-
+	double luas_mes[4] = {};
+	int soma_dias = 0;
 	definirPascoa(ano);
 	//definirEquinocios();
 	//definirEstacoes();
-	//definirLuas();
+	ano->mes.qtd_dias[0] = 0;
+	for(int i = 1; i <= MES ; i++)
+	{
+		soma_dias += ano->mes.qtd_dias[i-1];
+		calculoLunar(ano, i, soma_dias, luas_mes);
+	}
+
 	//finalizarBooleanos();
 
 }
