@@ -11,7 +11,7 @@
 #define CARCT 30
 #define MES 12
 #define SEM 7
-void calculoLunar(anos*, int, int, double*);
+void calculoLuaCheia(anos*);
 void zerarMatrizes(anos* ano)
 {
 	for(int i = 0; i < 14; i ++)
@@ -250,18 +250,10 @@ void definirFeriados(anos* ano)
 {
 	/* definir aqui os booleanos 
 	 * dos fixos (TODO)*/
-	double luas_mes[4] = {};
-	int soma_dias = 0;
 	definirPascoa(ano);
 	//definirEquinocios();
 	//definirEstacoes();
-	ano->mes.qtd_dias[0] = 0;
-	for(int i = 1; i <= MES ; i++)
-	{
-		soma_dias += ano->mes.qtd_dias[i-1];
-		calculoLunar(ano, i, soma_dias, luas_mes);
-	}
-
+	calculoLuaCheia(ano);	
 	//finalizarBooleanos();
 
 }
