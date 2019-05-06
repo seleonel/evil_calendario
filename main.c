@@ -15,7 +15,7 @@ int main()
 	anos ano;
 	zerarMatrizes(&ano);
 	// leitura do ano por fgets ou scanf
-	short int year = 2020;
+	short int year = 2019;
 	// primeira checagem se bissexto ou não
 	ano.bissexto = ehBissexto(year);
 	ano.ano = year;

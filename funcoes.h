@@ -2,6 +2,7 @@
 #define FUNCOES_H
 #include "estrutura.h"
 #include "lua.h"
+#include "astronomia.h"
 #include <string.h>
 #include <math.h>
 #include <stdlib.h>
@@ -11,7 +12,9 @@
 #define CARCT 30
 #define MES 12
 #define SEM 7
+#define QTD_DIM 6
 void calculoLuaCheia(anos*);
+void calculoGreg( double, long int, FILE*, char*);
 void zerarMatrizes(anos* ano)
 {
 	for(int i = 0; i < 14; i ++)
@@ -19,15 +22,35 @@ void zerarMatrizes(anos* ano)
 			for(int k = 0; k < 7; k++)
 				ano->mes.dias[i][j][k] = 0;
 
+	for(int i = 0; i < 24; i++)
+		for (int j = 0; j < 2; j++)
+			ano->mes.dia.fer.luas[i][j] = 0;		
+	for(int i = 0; i < 10; i++)
+		for (int j = 0; j < 2; j++)
+			ano->mes.dia.fer.luas[i][j] = 0;		
+	for(int i = 0; i < 10; i++)
+		for (int j = 0; j < 2; j++)
+			ano->mes.dia.fer.dia_ferdim[i][j] = 0;		
+	for(int i = 0; i < 10; i++)
+		for (int j = 0; j < 2; j++)
+			ano->mes.dia.fer.dia_ferfix[i][j] = 0;		
+	for(int i = 0; i < 10; i++)
+		ano->mes.dia.fer.nome_ferdim[i][0] = '\0';		
+	for(int i = 0; i < 10; i++)
+		ano->mes.dia.fer.nome_ferfix[i][0] = '\0';		
+	
+
+
+		
 }	
-void feriadosFixos(anos* ano)
+void feriadosSep(anos* ano, char* nome_arq, int controle)
 {
 	char delimit[] 		= "\t"; // no caso, tab é o separador do arquivo
-	FILE * fer_fixos 	= fopen("fixos", "r");
+	FILE* fer	= fopen(nome_arq, "r");
 	char linha[100];
 	char * ponteiro		= NULL;	
 	for(int i = 1; 
-	    fgets(linha,100, fer_fixos); 
+	    fgets(linha,100, fer); 
 	    i++)
 	{
 		ponteiro = strtok(linha, delimit);
@@ -35,20 +58,26 @@ void feriadosFixos(anos* ano)
 		{
 			switch(k)
 			{
-				case 0: 
-					ano->mes.dia.fer.dia_ferfix[i][0] =  strtol(ponteiro, NULL, 10);
+				case 0: if(controle)
+						ano->mes.dia.fer.dia_ferdim[i][0] =  strtol(ponteiro, NULL, 10);
+					else
+						ano->mes.dia.fer.dia_ferfix[i][0] =  strtol(ponteiro, NULL, 10);
 					break;
-				case 1: 
-					ano->mes.dia.fer.dia_ferfix[i][1] = strtol(ponteiro, NULL, 10);
-					break;
-				case 2: 
-					strcpy(ano->mes.dia.fer.nome_ferfix[i], ponteiro);
+				case 1: if(controle) 
+						ano->mes.dia.fer.dia_ferdim[i][1] = strtol(ponteiro, NULL, 10);
+					else
+						ano->mes.dia.fer.dia_ferfix[i][1] = strtol(ponteiro, NULL, 10);
+						break;
+				case 2: if(controle)
+						strcpy(ano->mes.dia.fer.nome_ferdim[i], ponteiro);
+					else
+						strcpy(ano->mes.dia.fer.nome_ferfix[i], ponteiro);
 					break;
 			
 			}
 		}
 	}
-	fclose(fer_fixos);
+	fclose(fer);
 }
 
 void leitura(anos* ano)
@@ -77,7 +106,7 @@ void leitura(anos* ano)
 		strcpy(ano->mes.nome_semana[i], semanas);
 		fclose(arq_datas);
 	
-	feriadosFixos(ano);
+	feriadosSep(ano, "fixos", 0);
 }
 bool ehBissexto(long int ano)
 {
@@ -186,7 +215,7 @@ void salvarRelacionados(int msanta,int dia_santa, int mquarta, int dia_quarta, i
 	if(!arq_dim) 
 		exit(EXIT_FAILURE);
 	
-	fprintf(arq_dim, "%d\t\%d\tQuarta-feira Santa\n", dia_quarta, mquarta);
+	fprintf(arq_dim, "%d\t\%d\tQuarta-feira de cinzas\n", dia_quarta, mquarta);
 
 	fprintf(arq_dim, "%d\t\%d\tPaixão de Cristo\n", dia_santa, msanta);
 
@@ -242,19 +271,123 @@ void definirPascoa(anos* ano)
 	m = ( a + 11 * h + 22 * l ) / 451;
 	n = ( h + l - 7 * m + 114 ) / 31; // mes
 	p = (( h + l - 7 * m + 114 ) % 31 ) + 1; // dia
-	ano->mes.dia.fer.ha_feriado[n] = true;
 	definirRelacionados(p, n, ano);
 }
+void tabela27A(double eq[][1], short int ano)
+{
+	double y = (double)ano/1000;
 
+	eq[0][0] =	1721139.29189
+	       		+ 365242.13740 * y
+			+ 0.06134 * pow(y, 2)
+			+ 0.00111 * pow(y, 3)
+			- 0.00071 * pow(y, 4);
+	eq[1][0] =	1721325.70455
+			+ 365242.49558 * y
+			- 0.11677 * pow(y, 2)
+			- 0.00297 * pow(y, 3)
+			+ 0.00074 * pow(y, 4);
+}
+
+void tabela27B(double eq[][1], short int ano)
+{
+	
+	double y = ((double)ano - 2000)/1000;
+
+	eq[0][0] =	2451623.80984
+	       		+ 365242.37404 * y
+			+ 0.05169 * pow(y, 2)
+			+ 0.00411 * pow(y, 3)
+			- 0.00057 * pow(y, 4);
+	eq[1][0] =	2451810.21715
+			+ 365242.01767 * y
+			- 0.11575 * pow(y, 2)
+			- 0.00337 * pow(y, 3)
+			+ 0.00078 * pow(y, 4);
+
+}
+double somasEq(double t)
+{
+	double resultado = 0;
+	for(int i = 0; i < 24; i++)
+		resultado += a[i]*cos(b[i]+ c[i]*t*FATOR);
+	return resultado;
+}
+
+double calcularEquinocios(double jde)
+{
+	double t, w, delta, s;
+	t = (jde - 2451545.0)/ 36525;
+	w = (35999.373*t - 2.47) * FATOR;
+	delta = 1 + 0.0334 * cos(w) + 0.0007* cos(2*w);
+	s = somasEq(t);
+	return  jde + (0.00001*s)/delta;
+}
+void definirEquinocios(anos* ano)
+{
+	void (*greg)( double, long int, FILE*) = calculoGreg;
+	double equinocios[2][1] = {};
+	double jde;
+	FILE * arq_dinamicos = fopen("dinamicos", "a");
+	if(!arq_dinamicos)
+		exit(EXIT_FAILURE);
+
+	if (ano->ano >= 1000)
+		 tabela27B(equinocios, ano->ano);
+	else	
+		 tabela27A(equinocios, ano->ano);
+
+	for(int i = 0; i< 2; i++){
+		if(i == 0)
+			calculoGreg(calcularEquinocios(equinocios[i][0]), ano->ano, arq_dinamicos, "Equinocio de marco");	
+		else
+			calculoGreg(calcularEquinocios(equinocios[i][0]), ano->ano, arq_dinamicos, "Equinocio de setembro");	
+	}
+	fclose(arq_dinamicos);
+	
+
+
+}
+void organizarDinamicos(anos* ano)
+{
+	feriadosSep(ano, "dinamicos", 1);
+	int i, j;
+	char temp[200];
+	unsigned int tempor = 0;
+	unsigned int tempo = 0;
+	// bubble sort para economizar meu tempo
+	for (j = i = 1; i < QTD_DIM ; i++){
+		for (int k = 0; k < QTD_DIM-i-1; k++)
+	{
+		if(ano->mes.dia.fer.dia_ferdim[k][j] > ano->mes.dia.fer.dia_ferdim[k+1][j])
+		{
+			tempor = ano->mes.dia.fer.dia_ferdim[k][j]; 			   
+			tempo = ano->mes.dia.fer.dia_ferdim[k][0];
+			strcpy(temp ,ano->mes.dia.fer.nome_ferdim[k]);
+			ano->mes.dia.fer.dia_ferdim[k][j] = ano->mes.dia.fer.dia_ferdim[k+1][j];
+			strcpy(ano->mes.dia.fer.nome_ferdim[k], ano->mes.dia.fer.nome_ferdim[k+1]);
+
+			 ano->mes.dia.fer.dia_ferdim[k][0] = ano->mes.dia.fer.dia_ferdim[k+1][0];
+			ano->mes.dia.fer.dia_ferdim[k+1][j] = tempor; 
+			strcpy(ano->mes.dia.fer.nome_ferdim[k+1], temp);
+			ano->mes.dia.fer.dia_ferdim[k+1][0] = tempo;
+		}
+	}
+	
+	}
+	for (j = i = 1; i < 8 ; i++)
+	{
+		printf("%d\t%d\t%s\n", ano->mes.dia.fer.dia_ferdim[i][0],ano->mes.dia.fer.dia_ferdim[i][j], ano->mes.dia.fer.nome_ferdim[i]);
+	}	
+
+
+}
 void definirFeriados(anos* ano)
 {
-	/* definir aqui os booleanos 
-	 * dos fixos (TODO)*/
 	definirPascoa(ano);
-	//definirEquinocios();
-	//definirEstacoes();
+	definirEquinocios(ano);
 	calculoLuaCheia(ano);	
-	//finalizarBooleanos();
+	organizarDinamicos(ano);
 
 }
 void imprimirFeriados(anos* ano)

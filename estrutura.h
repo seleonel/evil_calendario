@@ -2,11 +2,11 @@
 #define ESTRUTURAS_H
 
 typedef struct {
-	bool ha_feriado[12];
-	unsigned int dia_ferfix[4][2];
-	char nome_ferfix[4][100];
-	unsigned int dias_ferdim[8][8];
+	unsigned int dia_ferfix[10][2];
+	char nome_ferfix[10][100];
+	unsigned int dia_ferdim[8][8];
 	char nome_ferdim[8][100];
+	unsigned int luas[24][2];
 } feriados;
 
 typedef struct {

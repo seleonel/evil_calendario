@@ -171,7 +171,7 @@ void calculoLunar(anos* ano, double luas[])
         }
     }
 }
-void calculoGreg(short int dias[], double jd_lua, long int year, FILE * arq)
+void calculoGreg( double jd_lua, long int year, FILE * arq, char comentario[])
 {
 	jd_lua += 0.5f;
 	double z = abs(jd_lua);
@@ -201,19 +201,15 @@ void calculoGreg(short int dias[], double jd_lua, long int year, FILE * arq)
 	else if( mes == 1 || mes == 2)
 		ano = c - 4715;
 	if(ano == year)
-		fprintf(arq, "%d\t%d\n", dia, mes);
-}
-void salvarGreg(int dia, int mes, FILE* arq)
-{
+		fprintf(arq, "%d\t%d\t%s\n", dia, mes, comentario);
 }
 
 void convGreg(double luas[], long int year, FILE* arq)
 {
-	short int dia_lc[MES*2] = {0};
 	for(int i = 0; i < TAM_ARRAY ; i ++)
 	{
 		if(luas[i] > 0 )
-			calculoGreg(dia_lc, luas[i], year, arq);
+			calculoGreg( luas[i], year, arq, "");
 	}
 }
 void calculoLuaCheia(anos* ano)
