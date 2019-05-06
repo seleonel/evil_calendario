@@ -22,6 +22,7 @@ int main()
 	definirNomes(&ano);
 	definirDatas(&ano);
 	definirFeriados(&ano);
+	imprimirFeriados(&ano);
 	//imprimirFeriados(&ano);
 
 	return 0;

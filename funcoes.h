@@ -215,11 +215,11 @@ void salvarRelacionados(int msanta,int dia_santa, int mquarta, int dia_quarta, i
 	if(!arq_dim) 
 		exit(EXIT_FAILURE);
 	
-	fprintf(arq_dim, "%d\t\%d\tQuarta-feira de cinzas\n", dia_quarta, mquarta);
+	fprintf(arq_dim, "%d\t\%d\tQuarta-feira de cinzas\n", mquarta, dia_quarta);
 
-	fprintf(arq_dim, "%d\t\%d\tPaixão de Cristo\n", dia_santa, msanta);
+	fprintf(arq_dim, "%d\t\%d\tPaixão de Cristo\n", msanta, dia_santa);
 
-	fprintf(arq_dim, "%d\t\%d\tDomingo de páscoa\n", pascoa, mpasc);
+	fprintf(arq_dim, "%d\t\%d\tDomingo de páscoa\n", mpasc, pascoa);
 	fclose(arq_dim);
 
 }
@@ -351,36 +351,7 @@ void definirEquinocios(anos* ano)
 void organizarDinamicos(anos* ano)
 {
 	feriadosSep(ano, "dinamicos", 1);
-	int i, j;
-	char temp[200];
-	unsigned int tempor = 0;
-	unsigned int tempo = 0;
-	// bubble sort para economizar meu tempo
-	for (j = i = 1; i < QTD_DIM ; i++){
-		for (int k = 0; k < QTD_DIM-i-1; k++)
-	{
-		if(ano->mes.dia.fer.dia_ferdim[k][j] > ano->mes.dia.fer.dia_ferdim[k+1][j])
-		{
-			tempor = ano->mes.dia.fer.dia_ferdim[k][j]; 			   
-			tempo = ano->mes.dia.fer.dia_ferdim[k][0];
-			strcpy(temp ,ano->mes.dia.fer.nome_ferdim[k]);
-			ano->mes.dia.fer.dia_ferdim[k][j] = ano->mes.dia.fer.dia_ferdim[k+1][j];
-			strcpy(ano->mes.dia.fer.nome_ferdim[k], ano->mes.dia.fer.nome_ferdim[k+1]);
-
-			 ano->mes.dia.fer.dia_ferdim[k][0] = ano->mes.dia.fer.dia_ferdim[k+1][0];
-			ano->mes.dia.fer.dia_ferdim[k+1][j] = tempor; 
-			strcpy(ano->mes.dia.fer.nome_ferdim[k+1], temp);
-			ano->mes.dia.fer.dia_ferdim[k+1][0] = tempo;
-		}
-	}
 	
-	}
-	for (j = i = 1; i < 8 ; i++)
-	{
-		printf("%d\t%d\t%s\n", ano->mes.dia.fer.dia_ferdim[i][0],ano->mes.dia.fer.dia_ferdim[i][j], ano->mes.dia.fer.nome_ferdim[i]);
-	}	
-
-
 }
 void definirFeriados(anos* ano)
 {
@@ -392,8 +363,28 @@ void definirFeriados(anos* ano)
 }
 void imprimirFeriados(anos* ano)
 {
+	for(int i = 1; i <= 12; i++){
+		printf("       	   %s\n", ano->mes.nome_mes[i]);
+		puts("   D   S   T   Q   Q   S   S");
+		for(int j = 1; j <= 6; j++){
+			for(int k = 1; k <= 7; k++){
+				if(!ano->mes.dias[i][j][k])
+					printf("    ");
+				else
+					printf("%4d", ano->mes.dias[i][j][k]);
 
+			}
+			puts("\n");
+		}
+		puts("Feriados:");
+		for(int l = 0; l < 10; l++){
+			if(ano->mes.dia.fer.dia_ferfix[l][0] == i)
+				printf("%3d  %s", ano->mes.dia.fer.dia_ferfix[l][1], ano->mes.dia.fer.nome_ferfix[l]);
+		if(ano->mes.dia.fer.dia_ferdim[l][0] == i)
+			printf("%3d  %s", ano->mes.dia.fer.dia_ferdim[l][1], ano->mes.dia.fer.nome_ferdim[l]);
 
+		}
+	}
 
 }
 

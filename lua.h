@@ -201,7 +201,7 @@ void calculoGreg( double jd_lua, long int year, FILE * arq, char comentario[])
 	else if( mes == 1 || mes == 2)
 		ano = c - 4715;
 	if(ano == year)
-		fprintf(arq, "%d\t%d\t%s\n", dia, mes, comentario);
+		fprintf(arq, "%d\t%d\t%s\n", mes, dia, comentario);
 }
 
 void convGreg(double luas[], long int year, FILE* arq)
