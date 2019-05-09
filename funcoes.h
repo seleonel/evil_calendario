@@ -15,6 +15,12 @@
 #define QTD_DIM 6
 void calculoLuaCheia(anos*);
 void calculoGreg( double, long int, FILE*, char*);
+void anoUser(anos* ano)
+{
+	puts("Por favor, digite o ano que deseja saber os feriados: ");
+	scanf("%d", &ano->ano);
+
+}
 void zerarMatrizes(anos* ano)
 {
 	for(int i = 0; i < 14; i ++)
@@ -22,29 +28,19 @@ void zerarMatrizes(anos* ano)
 			for(int k = 0; k < 7; k++)
 				ano->mes.dias[i][j][k] = 0;
 
-	for(int i = 0; i < 24; i++)
-		for (int j = 0; j < 2; j++)
-			ano->mes.dia.fer.luas[i][j] = 0;		
-	for(int i = 0; i < 10; i++)
-		for (int j = 0; j < 2; j++)
-			ano->mes.dia.fer.luas[i][j] = 0;		
-	for(int i = 0; i < 10; i++)
-		for (int j = 0; j < 2; j++)
-			ano->mes.dia.fer.dia_ferdim[i][j] = 0;		
-	for(int i = 0; i < 10; i++)
-		for (int j = 0; j < 2; j++)
-			ano->mes.dia.fer.dia_ferfix[i][j] = 0;		
-	for(int i = 0; i < 10; i++)
-		ano->mes.dia.fer.nome_ferdim[i][0] = '\0';		
-	for(int i = 0; i < 10; i++)
-		ano->mes.dia.fer.nome_ferfix[i][0] = '\0';		
+	for (int i = 0; i < 50; i++)
+		for (int j = 0; j < 2; j++ )
+			ano->mes.dia.fer.feriados_tot[i][j] = 0;
+	for(int i = 0; i < 50; i++)
+		for (int j = 0; j < 200; j++)
+			ano->mes.dia.fer.nome_tot[i][j] = 0;
 	
-
 
 		
 }	
 void feriadosSep(anos* ano, char* nome_arq, int controle)
 {
+	static unsigned int contador = 0;
 	char delimit[] 		= "\t"; // no caso, tab é o separador do arquivo
 	FILE* fer	= fopen(nome_arq, "r");
 	char linha[100];
@@ -58,24 +54,20 @@ void feriadosSep(anos* ano, char* nome_arq, int controle)
 		{
 			switch(k)
 			{
-				case 0: if(controle)
-						ano->mes.dia.fer.dia_ferdim[i][0] =  strtol(ponteiro, NULL, 10);
-					else
-						ano->mes.dia.fer.dia_ferfix[i][0] =  strtol(ponteiro, NULL, 10);
+				case 0: ano->mes.dia.fer.feriados_tot[contador][0] =  strtol(ponteiro, NULL, 10);
 					break;
-				case 1: if(controle) 
-						ano->mes.dia.fer.dia_ferdim[i][1] = strtol(ponteiro, NULL, 10);
-					else
-						ano->mes.dia.fer.dia_ferfix[i][1] = strtol(ponteiro, NULL, 10);
-						break;
+				case 1: ano->mes.dia.fer.feriados_tot[contador][1] = strtol(ponteiro, NULL, 10);
+					break;
 				case 2: if(controle)
-						strcpy(ano->mes.dia.fer.nome_ferdim[i], ponteiro);
+						strcpy(ano->mes.dia.fer.nome_tot[contador], "Lua cheia\n");
 					else
-						strcpy(ano->mes.dia.fer.nome_ferfix[i], ponteiro);
+						strcpy(ano->mes.dia.fer.nome_tot[contador], ponteiro);
 					break;
 			
 			}
 		}
+
+		contador++;
 	}
 	fclose(fer);
 }
@@ -325,7 +317,6 @@ double calcularEquinocios(double jde)
 }
 void definirEquinocios(anos* ano)
 {
-	void (*greg)( double, long int, FILE*) = calculoGreg;
 	double equinocios[2][1] = {};
 	double jde;
 	FILE * arq_dinamicos = fopen("dinamicos", "a");
@@ -350,8 +341,8 @@ void definirEquinocios(anos* ano)
 }
 void organizarDinamicos(anos* ano)
 {
-	feriadosSep(ano, "dinamicos", 1);
-	
+	feriadosSep(ano, "dinamicos", 0);
+	feriadosSep(ano, "luas", 1);	
 }
 void definirFeriados(anos* ano)
 {
@@ -363,7 +354,8 @@ void definirFeriados(anos* ano)
 }
 void imprimirFeriados(anos* ano)
 {
-	for(int i = 1; i <= 12; i++){
+	unsigned int tam = sizeof(ano->mes.dia.fer.feriados_tot)/sizeof(ano->mes.dia.fer.feriados_tot[0]);
+	for(int i = 1; i <= MES; i++){
 		printf("       	   %s\n", ano->mes.nome_mes[i]);
 		puts("   D   S   T   Q   Q   S   S");
 		for(int j = 1; j <= 6; j++){
@@ -376,15 +368,14 @@ void imprimirFeriados(anos* ano)
 			}
 			puts("\n");
 		}
-		puts("Feriados:");
-		for(int l = 0; l < 10; l++){
-			if(ano->mes.dia.fer.dia_ferfix[l][0] == i)
-				printf("%3d  %s", ano->mes.dia.fer.dia_ferfix[l][1], ano->mes.dia.fer.nome_ferfix[l]);
-		if(ano->mes.dia.fer.dia_ferdim[l][0] == i)
-			printf("%3d  %s", ano->mes.dia.fer.dia_ferdim[l][1], ano->mes.dia.fer.nome_ferdim[l]);
+		puts("Feriados e/ou luas:");
+		for (int l = 0; l < tam; l++ ){
+			if(ano->mes.dia.fer.feriados_tot[l][0] == i)
+				printf("%3d %s", ano->mes.dia.fer.feriados_tot[l][1], ano->mes.dia.fer.nome_tot[l]);
+			}
+			puts("");
 
-		}
-	}
+			}
 
 }
 
