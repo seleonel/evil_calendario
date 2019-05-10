@@ -109,12 +109,38 @@ void definirNomes(anos* ano)
 {	
 	leitura(ano);
 }
-void mostraMeses()
+void organizarBolha(anos* ano)
 {
+	unsigned short int count = 0;
+	char temp[100];
+	int mes_temp	= 0;
+	int dia_temp	= 0;
+	int qtd		= 0;
+	for(int j = 0; ano->mes.dia.fer.feriados_tot[j][1] != 0; j++, qtd++);
 
+	for(int i = 0; i < qtd - 1 ; i++ ) 
+		{
+			for(int j = 0; j < qtd - i - 1; j++)
+			{
+				if(ano->mes.dia.fer.feriados_tot[j][1] > ano->mes.dia.fer.feriados_tot[j+1][1]  )
+				{
+					// mes
+					mes_temp = ano->mes.dia.fer.feriados_tot[j][0];
+					ano->mes.dia.fer.feriados_tot[j][0] = ano->mes.dia.fer.feriados_tot[j+1][0]; 
+					ano->mes.dia.fer.feriados_tot[j+1][0] = mes_temp;
 
-
-}
+					// dia
+					dia_temp =  ano->mes.dia.fer.feriados_tot[j][1]; 
+					ano->mes.dia.fer.feriados_tot[j][1] =  ano->mes.dia.fer.feriados_tot[j+1][1];
+ 					ano->mes.dia.fer.feriados_tot[j + 1][1] = dia_temp;
+					// chars
+ 					strcpy(temp ,ano->mes.dia.fer.nome_tot[j]);
+					strcpy(ano->mes.dia.fer.nome_tot[j], ano->mes.dia.fer.nome_tot[j+1]);
+					strcpy(ano->mes.dia.fer.nome_tot[j+1], temp );
+				}
+			}
+		}
+}	
 unsigned short int congruenzaZell(anos* ano, int mes)
 {
 	unsigned short int primeiro_dia = 1;
@@ -343,6 +369,17 @@ void organizarDinamicos(anos* ano)
 {
 	feriadosSep(ano, "dinamicos", 0);
 	feriadosSep(ano, "luas", 1);	
+/*	unsigned short int vetor_qtd[MES] = {0};
+	unsigned int tam = sizeof(ano->mes.dia.fer.feriados_tot)/sizeof(ano->mes.dia.fer.feriados_tot[0]);
+	for(int k = 1; k <= MES; k++){
+	for(int i = 0 ; i < tam ; i++){
+		if(ano->mes.dia.fer.feriados_tot[i][0] == k) {
+			vetor_qtd[k] += 1;}
+	}}
+	for(int i = 0 ; i < MES ; i++)
+		printf("%d\n", vetor_qtd[i]);
+*/				
+	organizarBolha(ano);
 }
 void definirFeriados(anos* ano)
 {

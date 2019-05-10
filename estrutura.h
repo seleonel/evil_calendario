@@ -3,7 +3,7 @@
 
 typedef struct {
 	// total de feriados serao guardados aqui
-	unsigned int feriados_tot[50][2];
+	unsigned short int feriados_tot[50][2];
 	char nome_tot[50][200];
 } feriados;
 
