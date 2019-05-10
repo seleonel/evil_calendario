@@ -403,7 +403,7 @@ void imprimirFeriados(anos* ano)
 					printf("%4d", ano->mes.dias[i][j][k]);
 
 			}
-			puts("\n");
+			puts("");
 		}
 		puts("Feriados e/ou luas:");
 		for (int l = 0; l < tam; l++ ){
