@@ -227,11 +227,11 @@ void salvarRelacionados(int msanta,int dia_santa, int mquarta, int dia_quarta, i
 	if(!arq_dim) 
 		exit(EXIT_FAILURE);
 	
-	fprintf(arq_dim, "%d\t\%d\tQuarta-feira de cinzas\n", mquarta, dia_quarta);
+	fprintf(arq_dim, "%d\t%d\tQuarta-feira de cinzas\n", mquarta, dia_quarta);
 
-	fprintf(arq_dim, "%d\t\%d\tPaixão de Cristo\n", msanta, dia_santa);
+	fprintf(arq_dim, "%d\t%d\tPaixão de Cristo\n", msanta, dia_santa);
 
-	fprintf(arq_dim, "%d\t\%d\tDomingo de páscoa\n", mpasc, pascoa);
+	fprintf(arq_dim, "%d\t%d\tDomingo de páscoa\n", mpasc, pascoa);
 	fclose(arq_dim);
 
 }
@@ -383,27 +383,55 @@ void definirFeriados(anos* ano)
 	organizarDinamicos(ano);
 
 }
-void converterFeriados(anos* ano, int mes, Ihandle* semana[7][9], Ihandle* lbl_fer[5])
+void converterFeriados(anos* ano, int mes, Ihandle* semana[9], Ihandle* lbl_fer[5])
 {
-	char string_dia[7];
+	char string_sem[400];
 	char string_fer[100];
+	char str_tmp[50];
+	char espac[] = "            ";
+	int teste[8];
 	int contador = 0;
 	unsigned int tam = sizeof(ano->mes.dia.fer.feriados_tot)/sizeof(ano->mes.dia.fer.feriados_tot[0]);
 		for(int j = 1; j <= 6; j++){
 			for(int k = 1; k <= 7; k++){
 				if(!ano->mes.dias[mes][j][k]){
-					semana[j][k] = IupLabel(" ");
+					teste[k] = 0;
 				}else{
-					sprintf(string_dia,"%4d", ano->mes.dias[mes][j][k]);
-					semana[j][k] = IupLabel(string_dia);
+				
+					teste[k] = ano->mes.dias[mes][j][k];
 				}
-			semana[j][k] = IupLabel("\n");
 			}
+		//	sprintf(string_sem,"%-10d%-10d%-10d%-10d%-10d%-10d%-10d", teste[1] ,teste[2] ,teste[3] ,teste[4] ,teste[5] ,teste[6],teste[7]);
+			for(int o = 1; o <= 7; o++)
+			{
+				if(o == 1){
+					if(!teste[o]){
+							sprintf(string_sem,"%s", espac);
+					}else{
+						if(teste[o] < 10)
+							sprintf(string_sem,"%*d", 12,teste[o]);
+						else
+							sprintf(string_sem,"%*d", 11,teste[o]);
+					}}
+				else{
+					if(!teste[o]){
+						strcat(string_sem, espac);
+					}else{
+						if(teste[o] < 10)
+							sprintf(str_tmp, "%*d",12, teste[o]);
+						else
+							sprintf(str_tmp, "%*d",11, teste[o]);
+						strcat(string_sem, str_tmp);
+			
+					}	}}
+			semana[j] = IupLabel(string_sem);
+			
 		}
 		for (int l = 0; l < tam; l++ ){
 			if(ano->mes.dia.fer.feriados_tot[l][0] == mes){
-//
-//				 IupSetStrf(semana[contador],string_fer,"%3d %s", ano->mes.dia.fer.feriados_tot[l][1], ano->mes.dia.fer.nome_tot[l]);
+
+				  sprintf(string_fer,"%3d %s", ano->mes.dia.fer.feriados_tot[l][1], ano->mes.dia.fer.nome_tot[l]);
+				  lbl_fer[contador] = IupLabel(string_fer);
 			contador++;}
 			}
 		
