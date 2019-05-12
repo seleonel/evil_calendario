@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
-#include <iup/iup.h>
+//#include <iup/iup.h> arch tem a pasta de includes diferente
+#include <iup.h>
 #include "lua.h"
 #include "funcoes.h"
 #include "estrutura.h"
@@ -113,9 +114,10 @@ int main(int argc, char** argv)
 	continhas(ano.ano);	
 	feriado_lbl 	= IupLabel("Feriados e luas");
 	mes_atual	= IupLabel(ano.mes.nome_mes[cont]);
-	bot_prevmes	= IupButton("Anterior", NULL);
-	bot_nextmes	= IupButton("Prox", NULL);
+	bot_prevmes	= IupButton("<-", NULL);
+	bot_nextmes	= IupButton("->", NULL);
 	bot_ano		= IupButton("Ano", NULL);	
+	espacador	= IupLabel("\t\t\t\t\t");
 	// menu superior 
 	superior = 
 		IupHbox(	
@@ -125,9 +127,7 @@ int main(int argc, char** argv)
 			    bot_nextmes,
 			    NULL) ;
 	//setar espaços
-	IupSetAttribute(superior, "ALIGNMENT", "ACENTER");
-	IupSetAttribute(superior, "GAP", "150");
-	IupSetAttribute(superior, "MARGIN", "10x10");
+	IupSetAttributes(superior, "ALIGNMENT=ALEFT, GAP=100, MARGIN=20x20");
 	
 	
 	//semanas
@@ -166,7 +166,6 @@ int main(int argc, char** argv)
 			sem[5],
 			sem[6],
 			NULL);		
-	espacador = IupLabel("\t\t\t\t\t\t");
 	IupSetAttributes(mes, "FONTSIZE=\"15\", FGCOLOR=\"#ffffff\"ALIGNMENT=ACENTER");
 	espaco = IupVbox( espacador,
 			NULL);
